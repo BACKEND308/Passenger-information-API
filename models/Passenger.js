@@ -1,83 +1,47 @@
 import mongoose from 'mongoose';
 
 const PassengerSchema = new mongoose.Schema({
-  Email: {
+  passenger_id: {
     type: String,
     required: true,
-    unique: true,
-    default: '-'
+    unique: true
   },
-  Password: {
+  Name: {
     type: String,
-    required: true,
-    default: '-'
-  },
-  PassportNumber: {
-    type: Number,
-    unique: true,
     required: true
   },
-  CustomerName: {
+  Flight_ID: {
     type: String,
-    required: true,
-    default: '-'
-  },
-  Seat_Assigned: {
-    type: String,
-    required: true,
-    default: '-'
-  },
-  Disabilities: {
-    type: String,
-    default: '-'
+    required: true
   },
   Age: {
     type: Number,
-    required: true,
-    default: 0
-  },
-  FlightNumber: {
-    type: String,
-    required: true,
-    default: '-'
-  },
-  PhoneNumber: {
-    type: String,
-    required: true,
-    default: '-'
+    required: true
   },
   Gender: {
     type: String,
-    required: true,
-    default: '-'
+    required: true
   },
   Nationality: {
     type: String,
-    required: true,
-    default: '-'
+    required: true
   },
-  SeatType: {
+  Seat_type: {
     type: String,
     required: true,
-    enum: ['business', 'economy', '-'],
-    default: '-'
+    enum: ['business', 'economy', 'None'],
+    default: 'None'
   },
-  ParentInfo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Passenger',
+  Seat_assigned: {
+    type: String,
     default: null
   },
   AffiliatedPassengerIDs: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Passenger',
+    type: [String],
     default: []
-  },
-  with_a_Child: {
-    type: Boolean,
-    default: false
   }
-});
+}, { collection: 'passenger_info' });
 
-const Passenger = mongoose.model('Passenger', PassengerSchema, 'passenger_info');
+const Passenger = mongoose.model('Passenger', PassengerSchema);
 
 export default Passenger;

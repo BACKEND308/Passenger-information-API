@@ -4,70 +4,305 @@ from enum import Enum
 import random
 import string 
 
-
-class SeatType(Enum):
-    BUSINESS = 'business'
-    ECONOMY = 'economy'
-
-
-
-
-def insert_passengers(db, passengers):
-    try:
-        passenger_info_collection = db.passenger_info
-        result = passenger_info_collection.insert_many(passengers)
-        print(f"Inserted passenger IDs: {result.inserted_ids}")
-    except Exception as e:
-        print(f"Failed to insert passengers: {e}")
-def generate_flight_id():
-    letters = "FL"  # Using 'FL' as the company's prefix
-    numbers = ''.join(random.choice(string.digits) for _ in range(4))
-    return f"{letters}{numbers}"
-
-def generate_passenger_id():
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-
+def insert_passenger_information(db, passenger_data):
+    passenger_info_collection = db.passenger_info
+    result = passenger_info_collection.insert_one(passenger_data)
+    print(f"Inserted passenger information with ID: {result.inserted_id}")
 
 def main():
     db = connectDB()
    
-    passengers = []
-    for i in range(1):
-        age = random.randint(0, 2)
-        passenger_id = generate_passenger_id()
-        seat_assigned = None if age <= 2 else random.choice([None, f"{random.choice(['12A', '12B', '12C'])}"])
-        passenger_info = {
-            'passenger_id': passenger_id,
-            'Flight_ID': generate_flight_id(),
-            'Name': f"Passenger{i + 1}",
-            'Age': age,
-            'Gender': random.choice(['Male', 'Female', 'None']),
-            'Nationality': random.choice(['Canadian', 'American', 'British', 'Z', 'Swedish', 'French', 'Russian', 'Indian'])
-        }
+    data = [
+        # # {
+        # #     "Passenger_id": "PAS12345",
+        # #     "Flight_id": "FL3691",
+        # #     "Name": "Jane Doe",
+        # #     "Age": 35,
+        # #     "Gender": "Female",
+        # #     "Nationality": "USA",
+        # #     "Seat_type": "Business",
+        # #     "Seat_assigned": "2B",
+        # #     "AffiliatedPassengerIDs": None,
+        # #     "Parent_info": None
+        # # },
+        # # {
+        # #     "Passenger_id": "PAS12346",
+        # #     "Flight_id": "FL3691",
+        # #     "Name": "John Doe Jr.",
+        # #     "Age": 5,
+        # #     "Gender": "Male",
+        # #     "Nationality": "USA",
+        # #     "Seat_type": "Economy",
+        # #     "Seat_assigned": None,
+        # #     "AffiliatedPassengerIDs": ["PAS12345", "PAS12347"],
+        # #     "Parent_info": None
+        # # },
+        # # {
+        # #     "Passenger_id": "PAS12347",
+        # #     "Flight_id": "FL3691",
+        # #     "Name": "Baby Doe",
+        # #     "Age": 1,
+        # #     "Gender": "Female",
+        # #     "Nationality": "USA",
+        # #     "Seat_type": "Economy",
+        # #     "Seat_assigned": None,
+        # #     "AffiliatedPassengerIDs": None,
+        # #     "Parent_info": [
+        # #         {
+        # #             "Parent_id": "PAS12345",
+        # #             "Seat_assigned": "2B"
+        # #         }
+        # #     ]
+        # # },
+        # # {
+        # #     "Passenger_id": "SOASGX",
+        # #     "Flight_id": "FL4088",
+        # #     "Name": "Passenger1",
+        # #     "Age": 37,
+        # #     "Gender": "Female",
+        # #     "Nationality": "French",
+        # #     "Seat_type": "Business",
+        # #     "Seat_assigned": "12A",
+        # #     "AffiliatedPassengerIDs": None,
+        # #     "Parent_info": None
+        # # }
         
-        if age <= 2:
-            # Add only parent info for infants
-            passenger_info.update({
-                'Parent_info': {'Parent_ID': generate_passenger_id(), 'Parent_Seat': random.choice(['12A', '12B', '12C'])}
-            })
-        else:
-            passenger_info.update({
-                'Seat_type': random.choice([e.value for e in SeatType]),
-                'Seat_assigned': seat_assigned
-            })
-            if not seat_assigned:
-                # Assign affiliated passenger IDs if no seat is assigned
-                affiliated_ids = [generate_passenger_id() for _ in range(random.choice([1, 2]))]
-                passenger_info['AffiliatedPassengerIDs'] = affiliated_ids
+        #  {
+        #     "Passenger_id": "PAS12349",
+        #     "Flight_id": "FL2089",
+        #     "Name": "Bob Johnson",
+        #     "Age": 42,
+        #     "Gender": "Male",
+        #     "Nationality": "British",
+        #     "Seat_type": "Business",
+        #     "Seat_assigned": "3A",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # },
+        # {
+        #     "Passenger_id": "PAS12350",
+        #     "Flight_id": "FL8137",
+        #     "Name": "Charlie Brown",
+        #     "Age": 33,
+        #     "Gender": "Male",
+        #     "Nationality": "Australian",
+        #     "Seat_type": "Economy",
+        #     "Seat_assigned": "18F",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # },
+        # {
+        #     "Passenger_id": "PAS12351",
+        #     "Flight_id": "FL3691",
+        #     "Name": "David Wilson",
+        #     "Age": 29,
+        #     "Gender": "Male",
+        #     "Nationality": "American",
+        #     "Seat_type": "Economy",
+        #     "Seat_assigned": "22D",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # },
+        # {
+        #     "Passenger_id": "PAS12352",
+        #     "Flight_id": "FL4088",
+        #     "Name": "Emma Taylor",
+        #     "Age": 31,
+        #     "Gender": "Female",
+        #     "Nationality": "German",
+        #     "Seat_type": "Business",
+        #     "Seat_assigned": "4C",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # },
+        # {
+        #     "Passenger_id": "PAS12353",
+        #     "Flight_id": "FL5121",
+        #     "Name": "Frank Clark",
+        #     "Age": 27,
+        #     "Gender": "Male",
+        #     "Nationality": "Italian",
+        #     "Seat_type": "Economy",
+        #     "Seat_assigned": "14B",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # },
+        # {
+        #     "Passenger_id": "PAS12354",
+        #     "Flight_id": "FL1265",
+        #     "Name": "Grace Lewis",
+        #     "Age": 45,
+        #     "Gender": "Female",
+        #     "Nationality": "Spanish",
+        #     "Seat_type": "Business",
+        #     "Seat_assigned": "2D",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # },
+        # {
+        #     "Passenger_id": "PAS12355",
+        #     "Flight_id": "FL5860",
+        #     "Name": "Henry Walker",
+        #     "Age": 39,
+        #     "Gender": "Male",
+        #     "Nationality": "Dutch",
+        #     "Seat_type": "Economy",
+        #     "Seat_assigned": "19E",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # },
+        # {
+        #     "Passenger_id": "PAS12356",
+        #     "Flight_id": "FL3027",
+        #     "Name": "Isabella Young",
+        #     "Age": 34,
+        #     "Gender": "Female",
+        #     "Nationality": "Swiss",
+        #     "Seat_type": "Business",
+        #     "Seat_assigned": "1A",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # },
+        # {
+        #     "Passenger_id": "PAS12357",
+        #     "Flight_id": "FL3880",
+        #     "Name": "Jack Harris",
+        #     "Age": 50,
+        #     "Gender": "Male",
+        #     "Nationality": "American",
+        #     "Seat_type": "Economy",
+        #     "Seat_assigned": "20C",
+        #     "AffiliatedPassengerIDs": None,
+        #     "Parent_info": None
+        # }
+        
+    #      {
+    #         "Passenger_id": "PAS12358",
+    #         "Flight_id": "FL5271",
+    #         "Name": "Kelly Morgan",
+    #         "Age": 25,
+    #         "Gender": "Female",
+    #         "Nationality": "Canadian",
+    #         "Seat_type": "Economy",
+    #         "Seat_assigned": "16A",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12359",
+    #         "Flight_id": "FL2089",
+    #         "Name": "Leo King",
+    #         "Age": 46,
+    #         "Gender": "Male",
+    #         "Nationality": "British",
+    #         "Seat_type": "Business",
+    #         "Seat_assigned": "3B",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12360",
+    #         "Flight_id": "FL8137",
+    #         "Name": "Mia Adams",
+    #         "Age": 32,
+    #         "Gender": "Female",
+    #         "Nationality": "Australian",
+    #         "Seat_type": "Economy",
+    #         "Seat_assigned": "18A",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12361",
+    #         "Flight_id": "FL3691",
+    #         "Name": "Nathan White",
+    #         "Age": 40,
+    #         "Gender": "Male",
+    #         "Nationality": "American",
+    #         "Seat_type": "Economy",
+    #         "Seat_assigned": "22A",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12362",
+    #         "Flight_id": "FL4088",
+    #         "Name": "Olivia Martin",
+    #         "Age": 36,
+    #         "Gender": "Female",
+    #         "Nationality": "German",
+    #         "Seat_type": "Business",
+    #         "Seat_assigned": "4A",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12363",
+    #         "Flight_id": "FL5121",
+    #         "Name": "Paul Lee",
+    #         "Age": 28,
+    #         "Gender": "Male",
+    #         "Nationality": "Italian",
+    #         "Seat_type": "Economy",
+    #         "Seat_assigned": "14C",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12364",
+    #         "Flight_id": "FL1265",
+    #         "Name": "Quinn Baker",
+    #         "Age": 48,
+    #         "Gender": "Female",
+    #         "Nationality": "Spanish",
+    #         "Seat_type": "Business",
+    #         "Seat_assigned": "2E",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12365",
+    #         "Flight_id": "FL5860",
+    #         "Name": "Ryan Scott",
+    #         "Age": 38,
+    #         "Gender": "Male",
+    #         "Nationality": "Dutch",
+    #         "Seat_type": "Economy",
+    #         "Seat_assigned": "19C",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12366",
+    #         "Flight_id": "FL3027",
+    #         "Name": "Sophie Green",
+    #         "Age": 30,
+    #         "Gender": "Female",
+    #         "Nationality": "Swiss",
+    #         "Seat_type": "Business",
+    #         "Seat_assigned": "1B",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     },
+    #     {
+    #         "Passenger_id": "PAS12367",
+    #         "Flight_id": "FL3880",
+    #         "Name": "Thomas Hall",
+    #         "Age": 51,
+    #         "Gender": "Male",
+    #         "Nationality": "American",
+    #         "Seat_type": "Economy",
+    #         "Seat_assigned": "20D",
+    #         "AffiliatedPassengerIDs": None,
+    #         "Parent_info": None
+    #     }
+    # ]
+    
 
-        passengers.append(passenger_info)
+    for passenger in data:
+        # insert_passenger_information(db, passenger)
 
-    # try:
-    #     passenger_info_collection = db.passenger_info
-    #     result = passenger_info_collection.insert_many(passengers)
-    #     print(f"Inserted passenger IDs: {result.inserted_ids}")
-    # except Exception as e:
-    #     print(f"Failed to insert passengers: {e}")
+
 
 
     # # Example: Transfer 'passenger_info' from MongoDB to a new MySQL table 'passenger_sql'

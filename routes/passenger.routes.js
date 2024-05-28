@@ -16,11 +16,21 @@ router.get('/', async (req, res) => {
 // Get a single passenger by ID
 router.get('/:id', async (req, res) => {
   try {
-    const passenger = await Passenger.findById(req.params.id);
+    const passenger = await Passenger.findOne({ Passenger_id: req.params.id });
     if (!passenger) {
       return res.status(404).json({ error: 'Passenger not found' });
     }
     res.json(passenger);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//Get passengers by flight number
+router.get('/flight/:flightNumber', async (req, res) => {
+  try {
+    const passengers = await Passenger.find({ Flight_ID: req.params.flightNumber });
+    res.json(passengers);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
